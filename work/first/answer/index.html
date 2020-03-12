@@ -150,7 +150,6 @@
         // data() その要素のdata属性を取得もしくはセットするメソッド。
         // DOMを見てもらうと data-text='jQuery' といった記述がある。これはDOMに特殊な値を設定する方法で、jQueryを使うことによって簡単に取得出来るのである。
         // 取得方法は data('text')で取得することが出来る（今回の場合）。HTMLのdata-〇〇="hoge"はjQueryのdata('〇〇')でhogeが取得できる
-        // また上には書いていないが、$('DOM').data('hoge', 'fuga')といった風に書くことによって、DOMのdata-hoge属性にfugaをセットすることが出来る。
         // html的に書けば<div data-hoge='fuga'></div>です。
         $('#q10').find('li').click(function() {
           var num = $(this).index();

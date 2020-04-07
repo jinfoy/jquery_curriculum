@@ -65,9 +65,68 @@
       //    </a>
       //  </div>
       // </li>
-      //
-      //
-      //
+
+      
+      $(function() {   
+        var pageCount = 1;
+       
+      //  検索のリセット
+        $('#js-search-word').on('change', function() {
+          reset();
+        });
+
+        // 検索実行
+        $('#js-search-button').on('click', function() {
+          receive();
+        });
+
+        // 検索結果の受け取り
+        function receive() {
+          var keyword = $('#js-search-word').val();
+          $.ajax({
+            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+              applicationId: '1019399324990976605', 
+              booksGenreId: '001',
+              keyword: keyword,
+              hits: '20',
+              page: pageCount,
+            },
+          }).done(function(data) {          
+            if (data.count === 0) {
+              notFound();
+            } else {
+              result(data.Items);
+            }
+            pageCount++;
+            console.log(data);
+          });
+        }
+
+        // ページのリセット
+        function reset() {
+          pageCount = 1;
+          $('ul').empty();
+        }
+
+        // 何もない場合の処理
+        function notFound() {
+          $('.message').remove();
+          $('.lists').prepend('<div class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</div>');
+        }
+
+        // 検索結果の表示処理
+        function result(data) {
+          var template = '' ;
+          $.each(data,function(index,value) {
+            template += `<li class='lists__item'><div class='lists__item__inner'><a href='${value.Item.itemUrl}' class='lists__item__link' target='_blank'><img src='${value.Item.largeImageUrl}' class='lists__item__img' alt='${value.Item.title}'><p class='lists__item__detail'>作品名：${value.Item.title}</p><p class='lists__item__detail'>作者　：${value.Item.author}</p><p class='lists__item__detail'>出版社：${value.Item.publisherName}</p></a></div></li>`;
+          });
+          $('.lists').prepend(template);
+        }
+
+      });  
     </script>
   </body>
 </html>

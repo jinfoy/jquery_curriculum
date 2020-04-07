@@ -68,8 +68,8 @@
 
 
       $(function() {   
-        var pageCount = 1;
-       
+        var pageCount = 0;
+        var prev = '';
       //  検索のリセット
         // $('#js-search-word').on('change', function() {
         //   reset();
@@ -77,14 +77,18 @@
 
         // 検索実行
         $('#js-search-button').on('click', function() {
-        
-         
           receive();
         });
 
         // 検索結果の受け取り
         function receive() {
           var keyword = $('#js-search-word').val();
+          if (prev === keyword) {
+            pageCount += 1;
+          } else {
+            reset();
+          }
+          prev = keyword;
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
@@ -102,7 +106,6 @@
             } else {
               result(data.Items);
             }
-            pageCount++;
             console.log(data);
 
           }).fail(function() {

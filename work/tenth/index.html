@@ -66,17 +66,19 @@
       //  </div>
       // </li>
 
-      
+
       $(function() {   
         var pageCount = 1;
        
       //  検索のリセット
-        $('#js-search-word').on('change', function() {
-          reset();
-        });
+        // $('#js-search-word').on('change', function() {
+        //   reset();
+        // });
 
         // 検索実行
         $('#js-search-button').on('click', function() {
+        
+         
           receive();
         });
 
@@ -94,7 +96,7 @@
               hits: '20',
               page: pageCount,
             },
-          }).done(function(data) {          
+          }).done(function(data) {     
             if (data.count === 0) {
               notFound();
             } else {
@@ -102,6 +104,9 @@
             }
             pageCount++;
             console.log(data);
+
+          }).fail(function() {
+            notFound();
           });
         }
 
@@ -121,7 +126,13 @@
         function result(data) {
           var template = '' ;
           $.each(data,function(index,value) {
-            template += `<li class='lists__item'><div class='lists__item__inner'><a href='${value.Item.itemUrl}' class='lists__item__link' target='_blank'><img src='${value.Item.largeImageUrl}' class='lists__item__img' alt='${value.Item.title}'><p class='lists__item__detail'>作品名：${value.Item.title}</p><p class='lists__item__detail'>作者　：${value.Item.author}</p><p class='lists__item__detail'>出版社：${value.Item.publisherName}</p></a></div></li>`;
+            template += "<li class='lists__item'>" +
+              "<div class='lists__item__inner'>" +
+              "<a href='" + value.Item.itemUrl + "'class='lists__item__link' target='_blank'>" +
+              "<img src='" + value.Item.largeImageUrl + "'class='lists__item__img' alt=" + value.Item.title + ">" + 
+              "<p class='lists__item__detail'>作品名：" + value.Item.title + "</p>" +
+              "<p class='lists__item__detail'>作者　：" + value.Item.author + "</p>" +
+              "<p class='lists__item__detail'>出版社：" + value.Item.publisherName + "</p></a></div></li>";
           });
           $('.lists').prepend(template);
         }

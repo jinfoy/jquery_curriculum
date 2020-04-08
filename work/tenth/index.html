@@ -70,11 +70,7 @@
       $(function() {   
         var pageCount = 0;
         var prev = '';
-      //  検索のリセット
-        // $('#js-search-word').on('change', function() {
-        //   reset();
-        // });
-
+     
         // 検索実行
         $('#js-search-button').on('click', function() {
           receive();
@@ -108,8 +104,8 @@
             }
             console.log(data);
 
-          }).fail(function() {
-            notFound();
+          }).fail(function(data) {
+            errorMessage(data);
           });
         }
 
@@ -139,6 +135,18 @@
           });
           $('.lists').prepend(template);
         }
+
+        // エラー処理 
+        function errorMessage(data) {
+          $('.message').remove();
+          console.log(data);
+          if (data.status === 429) {
+            $('.lists').html('<div class="message">リクエスト過多</div>');
+          } else if (data.status === 400) {
+            $('.lists').html('<div class="message">空文字検索</div>');
+          } else {
+            $('.lists').html('<div class="message">オフライン</div>');
+        }}
 
       });  
     </script>

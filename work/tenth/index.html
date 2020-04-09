@@ -68,23 +68,27 @@
 
 
       $(function() {   
+        //取得したデータのページ数を代入するための変数pageCountを作成
         var pageCount = 0;
+        //検索ワードを比較するための空箱、変数prevを作成
         var prev = '';
      
         // 検索実行
         $('#js-search-button').on('click', function() {
-          receive();
+          receive(); //検索ボタンのクリックイベント
         });
 
         // 検索結果の受け取り
         function receive() {
-          var keyword = $('#js-search-word').val();
+          var keyword = $('#js-search-word').val(); //変数keywordに検索バーに入力された値を代入
+          //前回の検索ワードを変数prevに代入し、今回の検索ワードと比較する
           if (prev === keyword) {
-            pageCount += 1;
+            pageCount += 1;//検索ワードが同じであれば２ページ目を表示
           } else {
-            reset();
+            reset();//検索ワードが変わっていれば関数resetの処理
           }
           prev = keyword;
+          //サーバーにアクセス
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
@@ -94,36 +98,39 @@
               booksGenreId: '001',
               keyword: keyword,
               hits: '20',
-              page: pageCount,
+              page: pageCount, //扱い易いように変数にしておく
             },
+          //データを取得できた場合の処理
           }).done(function(data) {     
-            if (data.count === 0) {
-              notFound();
+            if (data.count === 0) { 
+              notFound(); //検索ワードにヒットするものがなかった時notFoundを実行
             } else {
-              result(data.Items);
+              result(data.Items); //検索ワードがヒットした時にresultを実行
             }
             console.log(data);
-
+          //データを取得できなかった場合のエラー処理
           }).fail(function(data) {
-            errorMessage(data);
+            errorMessage(data);//errorMessageを実行
           });
         }
 
         // ページのリセット
         function reset() {
-          pageCount = 1;
-          $('ul').empty();
+          pageCount = 1; //ページカウントを０に戻す
+          $('ul').empty(); //ulの中身を空にする
         }
 
         // 何もない場合の処理
         function notFound() {
-          $('.message').remove();
-          $('.lists').prepend('<div class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</div>');
+          $('.message').remove(); //同じメッセージが羅列しないように.messageを消す
+          $('.lists').prepend('<div class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</div>'); 
+          //検索結果が見つからなかった時に表示
         }
 
         // 検索結果の表示処理
-        function result(data) {
-          var template = '' ;
+        function result(data) {//引数を使って取得したデータを処理
+          var template = '' ; //変数templateを作成し、繰り返し処理を入れるための箱を作ってあげる
+          //取得したデータを繰り返し構文で、一つづつ処理していきtenplateに足していく
           $.each(data,function(index,value) {
             template += "<li class='lists__item'>" +
               "<div class='lists__item__inner'>" +
@@ -133,18 +140,19 @@
               "<p class='lists__item__detail'>作者　：" + value.Item.author + "</p>" +
               "<p class='lists__item__detail'>出版社：" + value.Item.publisherName + "</p></a></div></li>";
           });
+          //繰り返し処理が終わった後に、templateの中身を.listの小要素の先頭に追加する
           $('.lists').prepend(template);
         }
 
         // エラー処理 
-        function errorMessage(data) {
-          $('.message').remove();
+        function errorMessage(data) {//引数を使って取得したデータを処理
+          $('.message').remove(); //メッセージが羅列しないように.messageを消す
           console.log(data);
-          if (data.status === 429) {
+          if (data.status === 429) { //リクエスト過多の場合の処理　エラー番号429
             $('.lists').html('<div class="message">リクエスト過多</div>');
-          } else if (data.status === 400) {
+          } else if (data.status === 400) { //入力された文字が正しくない時の処理　エラー番号400
             $('.lists').html('<div class="message">空文字検索</div>');
-          } else {
+          } else { //ネットワーク接続が確認できない時の処理
             $('.lists').html('<div class="message">オフライン</div>');
         }}
 
